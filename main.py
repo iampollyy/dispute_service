@@ -8,6 +8,7 @@ from schemas import (
     DisputeResponse, DisputeCreate, DisputeStatusUpdate
 )
 from seed import seed_data
+from message_reader import start_message_reader
 
 app = FastAPI(title="DisputeService", version="1.0.0")
 
@@ -17,6 +18,7 @@ def startup():
     create_schema()
     Base.metadata.create_all(bind=engine)
     seed_data()
+    start_message_reader()
 
 
 # ==================== DISPUTE ENDPOINTS ====================
