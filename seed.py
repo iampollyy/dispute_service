@@ -1,12 +1,16 @@
+import logging
+
 from database import SessionLocal
 from models import Dispute
+
+logger = logging.getLogger(__name__)
 
 
 def seed_data():
     db = SessionLocal()
     try:
         if db.query(Dispute).first():
-            print("[DisputeService] Данные уже существуют, пропускаем seed.")
+            logger.info("Seed data already exists, skipping.")
             return
 
         disputes = [
@@ -50,9 +54,9 @@ def seed_data():
         ]
         db.add_all(disputes)
         db.commit()
-        print("[DisputeService] Seed данные добавлены успешно!")
+        logger.info("Seed data inserted successfully.")
     except Exception as e:
         db.rollback()
-        print(f"[DisputeService] Ошибка при seed: {e}")
+        logger.error(f"Seed data insertion failed: {e}")
     finally:
         db.close()
