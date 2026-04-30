@@ -18,17 +18,21 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="DisputeService", version="1.0.0")
 
+from contextlib import asynccontextmanager
 
-@app.on_event("startup")
-def startup():
+@asynccontextmanager
+async def lifespan(app):
     logger.info("Starting DisputeService...")
     create_schema()
     Base.metadata.create_all(bind=engine)
     seed_data()
     start_message_reader()
     logger.info("DisputeService startup complete.")
+    yield
+    # Optionally add shutdown logic here
+
+app = FastAPI(title="DisputeService", version="1.0.0", lifespan=lifespan)
 
 
 # ==================== DISPUTE ENDPOINTS ====================
