@@ -5,12 +5,11 @@ pool:
   vmImage: ubuntu-latest
 
 stages:
-  # ───────── Stage 1: Syntax Check ─────────
   - stage: SyntaxCheck
-    displayName: "Syntax & Lint Check"
+    displayName: "Syntax Check"
     jobs:
-      - job: PySyntaxCheck
-        displayName: "Python syntax check (py_compile)"
+      - job: SyntaxCheckJob
+        displayName: "py_compile all .py files"
         steps:
           - task: UsePythonVersion@0
             inputs:
@@ -18,20 +17,16 @@ stages:
             displayName: "Use Python 3.11"
 
           - script: |
-              echo "Checking syntax of all .py files..."
-              python -m py_compile main.py
-              python -m py_compile database.py
-              python -m py_compile models.py
-              python -m py_compile schemas.py
-              python -m py_compile config.py
-              python -m py_compile seed.py
-              python -m py_compile message_reader.py
-              echo "All files passed syntax check."
-            displayName: "py_compile — syntax check"
+              echo "=== Running syntax check on all .py files ==="
+              find . -name "*.py" -not -path "./.venv/*" -not -path "./__pycache__/*" | while read f; do
+                echo "Checking $f"
+                python -m py_compile "$f" || exit 1
+              done
+              echo "=== All files passed syntax check ==="
+            displayName: "Compile-check Python files"
 
-  # ───────── Stage 2: Run Tests & Publish ─────────
-  - stage: RunTests
-    displayName: "Run Unit Tests"
+  - stage: Test
+    displayName: "Run Tests"
     dependsOn: SyntaxCheck
     jobs:
       - job: UnitTests
@@ -44,15 +39,14 @@ stages:
 
           - script: |
               python -m pip install --upgrade pip
-              pip install -r requirements
-              pip install pytest pytest-cov httpx
+              pip install -r requirements.txt
             displayName: "Install dependencies"
 
           - script: |
               python -m pytest tests/ \
                 --junitxml=test-results/results.xml \
-                --tb=short -v
-            displayName: "Run pytest"
+                -v
+            displayName: "Run unit tests"
 
           - task: PublishTestResults@2
             condition: succeededOrFailed()
@@ -69,4 +63,4 @@ stages:
               PathtoPublish: "test-results"
               ArtifactName: "TestResults"
               publishLocation: "Container"
-            displayName: "Upload test results as artifact"
+            displayName: "Upload test results artifact"
