@@ -3,9 +3,9 @@ import logging
 import threading
 import time
 from azure.servicebus import ServiceBusClient
-from config import SERVICE_BUS_LISTEN_CONNECTION_STRING, QUEUE_NAME
-from database import SessionLocal
-from models import Dispute
+from dispute_service.config import SERVICE_BUS_LISTEN_CONNECTION_STRING, QUEUE_NAME
+from dispute_service.database import SessionLocal
+from dispute_service.models import Dispute
 
 logger = logging.getLogger(__name__)
 

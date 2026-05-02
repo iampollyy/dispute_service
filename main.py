@@ -4,13 +4,13 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 
-from database import engine, get_db, create_schema, Base
-from models import Dispute
-from schemas import (
+from dispute_service.database import engine, get_db, create_schema, Base
+from dispute_service.models import Dispute
+from dispute_service.schemas import (
     DisputeResponse, DisputeCreate, DisputeStatusUpdate
 )
-from seed import seed_data
-from message_reader import start_message_reader
+from dispute_service.seed import seed_data
+from dispute_service.message_reader import start_message_reader
 
 logging.basicConfig(
     level=logging.INFO,

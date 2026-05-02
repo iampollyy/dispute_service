@@ -1,7 +1,7 @@
 import logging
 
-from database import SessionLocal
-from models import Dispute
+from dispute_service.database import SessionLocal
+from dispute_service.models import Dispute
 
 logger = logging.getLogger(__name__)
 
