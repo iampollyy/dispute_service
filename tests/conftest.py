@@ -2,6 +2,12 @@
 Shared test fixtures for the Dispute Service test suite.
 Uses an in-memory SQLite database so tests remain fast and isolated.
 """
+import sys
+from pathlib import Path
+
+# Add parent directory to Python path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import pytest
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
